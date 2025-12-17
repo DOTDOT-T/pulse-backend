@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "paths": {
+      "lib/*": ["lib/*"]
+  },
+  "allowImportingTsExtensions": false
+  },
+  "baseUrl": ".",
+  "paths": {
+    "*": ["src/*"]
+  }
+}
