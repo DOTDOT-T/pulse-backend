@@ -1,17 +1,25 @@
 {
   "compilerOptions": {
+    "target": "ES2022",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
+
+    "strict": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+
     "baseUrl": ".",
     "paths": {
       "lib/*": ["lib/*"]
+    },
+
+    "outDir": "dist",
+    "skipLibCheck": true
   },
-  "allowImportingTsExtensions": false
-  },
-  "baseUrl": ".",
-  "paths": {
-    "*": ["src/*"]
-  }
+  "include": [
+    "server.ts",
+    "lib/**/*",
+    "src/**/*",
+    "types/**/*.d.ts"
+, "types"  ]
 }

@@ -16,6 +16,18 @@ app.register(jwt, {
   secret: process.env.JWT_SECRET || 'supersecret',
 });
 
+app.decorate(
+  'authenticate',
+  async (request: any, reply: any) => {
+    try {
+      await request.jwtVerify();
+    } catch {
+      reply.code(401).send({ error: 'Unauthorized' });
+    }
+  }
+);
+
+
 // Route test
 app.get('/users', async () => {
   return prisma.user.findMany();
@@ -40,6 +52,63 @@ app.post('/signup', async (request, reply) => {
     throw e;
   }
 });
+
+app.post('/login', async (request, reply) => {
+  const { email, password } = request.body as {
+    email: string;
+    password: string;
+  };
+
+  const bcrypt = await import('bcrypt');
+
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (!user) {
+    reply.code(401);
+    return { error: 'Invalid credentials' };
+  }
+
+  const valid = await bcrypt.compare(password, user.password);
+
+  if (!valid) {
+    reply.code(401);
+    return { error: 'Invalid credentials' };
+  }
+
+  const token = app.jwt.sign(
+    { id: user.id, email: user.email },
+    { expiresIn: '15m' } // court volontairement
+  );
+
+  const refreshToken = app.jwt.sign(
+    { id: user.id },
+    { expiresIn: '7d' }
+  );
+
+  return {
+    token,
+    refreshToken,
+  };
+});
+
+app.get(
+  '/me',
+  { preHandler: [app.authenticate] },
+  async (request: any) => {
+    return prisma.user.findUnique({
+      where: { id: request.user.id },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+      },
+    });
+  }
+);
+
+
 
 app.listen({ port: 5000 }, () => {
   console.log('Server running on http://localhost:5000');
