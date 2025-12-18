@@ -24,3 +24,12 @@ model User {
   name  String?
   password String
 }
+
+model Application {
+  id Int @id @default(autoincrement())
+  title String @unique
+  descp String
+  price Decimal
+  isSub Boolean
+  link String
+}
